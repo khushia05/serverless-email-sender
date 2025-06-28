@@ -1,0 +1,26 @@
+name: Deploy Email Sender
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install Azure Functions Core Tools
+        run: npm install -g azure-functions-core-tools@3
+
+      - name: Deploy Function App Code
+        run: |
+          cd email-sender
+          func azure functionapp publish email-sender-func --python
