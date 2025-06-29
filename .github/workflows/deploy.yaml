@@ -8,19 +8,29 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
+    steps:
+      - name: 📦 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
-      - name: Install Azure Functions Core Tools
-        run: npm install -g azure-functions-core-tools@3
-
-      - name: Deploy Function App Code
+      - name: 🧪 Install dependencies
         run: |
-          cd email-sender
-          func azure functionapp publish email-sender-func --python
+          python -m pip install --upgrade pip
+          pip install -r email-sender/requirements.txt --target email-sender/.python_packages/lib/site-packages
+
+      - name: ✅ Archive Function App
+        working-directory: email-sender
+        run: |
+          zip -r ../email-sender.zip . -x '*.git*'
+
+      - name: 🚀 Deploy to Azure Function App
+        uses: Azure/functions-action@v1
+        with:
+          app-name: 'email-sender-khushi-func'
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          package: email-sender.zip
