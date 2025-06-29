@@ -26,7 +26,6 @@ jobs:
 
       - name: ✅ Archive Function App
         run: |
-          cd email-sender
           zip -r ../email-sender.zip * -x '*.git*'
   
 
