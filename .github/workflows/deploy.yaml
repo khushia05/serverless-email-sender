@@ -25,9 +25,10 @@ jobs:
           pip install -r email-sender/requirements.txt --target email-sender/.python_packages/lib/site-packages
 
       - name: ✅ Archive Function App
-        working-directory: email-sender
         run: |
-          zip -r ../email-sender.zip . -x '*.git*'
+          cd email-sender
+          zip -r ../email-sender.zip * -x '*.git*'
+  
 
       - name: 🚀 Deploy to Azure Function App
         uses: Azure/functions-action@v1
