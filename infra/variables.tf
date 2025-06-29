@@ -20,7 +20,7 @@ variable "app_service_plan_name" {
 
 variable "function_app_name" {
   description = "Function App Name"
-  default     = "email-sender-func"
+  default     = "email-sender-khushi-func"
 }
 
 variable "sendgrid_api_key" {
