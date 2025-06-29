@@ -11,27 +11,35 @@ resource "azurerm_storage_account" "storage" {
   account_replication_type = "LRS"
 }
 
-resource "azurerm_app_service_plan" "plan" {
-  name                = var.app_service_plan_name
-  location            = azurerm_resource_group.rg.location
+resource "azurerm_service_plan" "plan" {
+  name                = var.service_plan_name
   resource_group_name = azurerm_resource_group.rg.name
-  sku {
-    tier = "Dynamic"
-    size = "Y1"
-  }
+  location            = azurerm_resource_group.rg.location
+  os_type             = "Linux"
+  sku_name            = "Y1" 
 }
 
-resource "azurerm_function_app" "function" {
+resource "azurerm_linux_function_app" "function" {
   name                       = var.function_app_name
-  location                   = azurerm_resource_group.rg.location
   resource_group_name        = azurerm_resource_group.rg.name
+  location                   = azurerm_resource_group.rg.location
   storage_account_name       = azurerm_storage_account.storage.name
   storage_account_access_key = azurerm_storage_account.storage.primary_access_key
-  app_service_plan_id        = azurerm_app_service_plan.plan.id
-  version                    = "~3"
+  service_plan_id            = azurerm_service_plan.plan.id
 
-  app_settings = {
-    FUNCTIONS_WORKER_RUNTIME = "python"
-    SENDGRID_API_KEY         = var.sendgrid_api_key
+  site_config {
+    application_stack {
+      python_version = "3.12"
+    }
+    cors {
+    allowed_origins = [
+    "https://portal.azure.com",
+    "https://your-frontend-domain.com" 
+    ]
+    support_credentials = false
+    }
   }
+  app_settings = {
+  SENDGRID_API_KEY = var.sendgrid_api_key
+}
 }

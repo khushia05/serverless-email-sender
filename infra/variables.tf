@@ -13,7 +13,7 @@ variable "storage_account_name" {
   default     = "emailsenderstoragexyz"
 }
 
-variable "app_service_plan_name" {
+variable "service_plan_name" {
   description = "App Service Plan Name"
   default     = "email-sender-plan"
 }
