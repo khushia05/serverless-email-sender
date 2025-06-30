@@ -105,7 +105,7 @@
 
       messageDiv.textContent = "Submitting...";
       try {
-        const response = await fetch('https://email-sender-khushi-func.azurewebsites.net/api/email-sender', {
+        const response = await fetch('https://email-sender-khushi-func.azurewebsites.net/api/send-email-fun', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
