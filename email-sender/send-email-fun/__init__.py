@@ -20,7 +20,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         """
 
         message = Mail(
-            from_email='kagrahari2024@gmail.com',
+            from_email='kagrahari2024@gmail.com',   # ✅ Make sure this is a verified sender
             to_emails=to_email,
             subject=subject,
             html_content=body
@@ -29,13 +29,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         sg = SendGridAPIClient(os.environ['SENDGRID_API_KEY'])
         response = sg.send(message)
 
+        logging.info(f"SendGrid response status: {response.status_code}")
+        logging.info(f"Response body: {response.body}")
+
         return func.HttpResponse(
             f"Email sent to {to_email}",
             status_code=200
         )
+
     except Exception as e:
-        logging.error(str(e))
+        logging.exception("Exception occurred while sending email")   # ✅ This line prints full stack trace
         return func.HttpResponse(
-            "Error sending email",
+            f"Error sending email: {str(e)}",   # ✅ Include error message in HTTP response for debugging
             status_code=500
         )
