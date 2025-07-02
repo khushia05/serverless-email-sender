@@ -1,17 +1,16 @@
 import logging
 import os
+import json
 import azure.functions as func
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
-        # Input from request
         req_body = req.get_json()
         to_email = req_body.get('to')
-        name = req_body.get('name', 'Candidate')  # Default 'Candidate' if not provided
+        name = req_body.get('name', 'Candidate')
 
-        # Fixed Subject & Body with personalized name
         subject = "Thank you for applying!"
         body = f"""
         <p>Dear {name},</p>
@@ -20,7 +19,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         """
 
         message = Mail(
-            from_email='kagrahari2024@gmail.com',   # ✅ Make sure this is a verified sender
+            from_email='kagrahari2024@gmail.com',
             to_emails=to_email,
             subject=subject,
             html_content=body
@@ -32,14 +31,17 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.info(f"SendGrid response status: {response.status_code}")
         logging.info(f"Response body: {response.body}")
 
+        # ✅ Always return JSON response
         return func.HttpResponse(
-            f"Email sent to {to_email}",
-            status_code=200
+            json.dumps({"message": f"Email sent to {to_email}"}),
+            status_code=200,
+            mimetype="application/json"
         )
 
     except Exception as e:
-        logging.exception("Exception occurred while sending email")   # ✅ This line prints full stack trace
+        logging.exception("Exception occurred while sending email")
         return func.HttpResponse(
-            f"Error sending email: {str(e)}",   # ✅ Include error message in HTTP response for debugging
-            status_code=500
+            json.dumps({"error": f"Error sending email: {str(e)}"}),
+            status_code=500,
+            mimetype="application/json"
         )
